@@ -162,6 +162,7 @@ public class ArrayList<E> extends AbstractList<E>
     /**
      * Constructs an empty list with an initial capacity of ten.
      */
+    // 赋值为空数组
     public ArrayList() {
         this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
     }
@@ -224,8 +225,10 @@ public class ArrayList<E> extends AbstractList<E>
 
     private static int calculateCapacity(Object[] elementData, int minCapacity) {
         if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) {
+            // 如果数组为空，首次扩容长度为DEFAULT_CAPACITY，也就是10
             return Math.max(DEFAULT_CAPACITY, minCapacity);
         }
+        // 除了首次扩容以外，其余扩容长度为 minCapacity
         return minCapacity;
     }
 
@@ -238,6 +241,7 @@ public class ArrayList<E> extends AbstractList<E>
 
         // overflow-conscious code
         if (minCapacity - elementData.length > 0)
+            // 扩容真正执行的函数
             grow(minCapacity);
     }
 
@@ -255,15 +259,19 @@ public class ArrayList<E> extends AbstractList<E>
      *
      * @param minCapacity the desired minimum capacity
      */
+    // 扩容函数
     private void grow(int minCapacity) {
         // overflow-conscious code
         int oldCapacity = elementData.length;
+        // 新的容量 = 老的容量 * 1.5
         int newCapacity = oldCapacity + (oldCapacity >> 1);
         if (newCapacity - minCapacity < 0)
             newCapacity = minCapacity;
+        // 如果新的容量 > MAX_ARRAY_SIZE，新的容量 = Integer.MAX_VALUE 或者 MAX_ARRAY_SIZE，取决于老的容量
         if (newCapacity - MAX_ARRAY_SIZE > 0)
             newCapacity = hugeCapacity(minCapacity);
         // minCapacity is usually close to size, so this is a win:
+        // 通过copyOf函数扩容 elementData.length = newCapacity
         elementData = Arrays.copyOf(elementData, newCapacity);
     }
 
