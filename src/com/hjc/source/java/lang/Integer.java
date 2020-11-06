@@ -776,8 +776,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      * may be set and saved in the private system properties in the
      * sun.misc.VM class.
      */
-    // Integer的常量池（缓存池），维护了[-128, 127]的常量，保存在一个数组中
-    private static class IntegerCache {
+    private static class IntegerCache {     // Integer的常量池（缓存池），维护了[-128, 127]的常量，保存在一个数组中
         static final int low = -128;
         static final int high;
         static final Integer cache[];
@@ -826,10 +825,8 @@ public final class Integer extends Number implements Comparable<Integer> {
      * @return an {@code Integer} instance representing {@code i}.
      * @since  1.5
      */
-    // 装箱操作 int -> Integer，如果i在[-128, 127]之间，就直接从常量池中获得数据，否则返回一个新的Integer对象
-    // 自动装箱操作会调用此函数，如果数据在[-128, 127]之间，用==运算符比较装箱后的Integer实例时会返回true
-    public static Integer valueOf(int i) {
-        if (i >= IntegerCache.low && i <= IntegerCache.high)
+    public static Integer valueOf(int i) {      // 装箱操作 int -> Integer，如果i在[-128, 127]之间，就直接从常量池中获得数据，否则返回一个新的Integer对象
+        if (i >= IntegerCache.low && i <= IntegerCache.high)        // 自动装箱操作会调用此函数，如果数据在[-128, 127]之间，用==运算符比较装箱后的Integer实例时会返回true
             return IntegerCache.cache[i + (-IntegerCache.low)];
         return new Integer(i);
     }

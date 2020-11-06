@@ -132,7 +132,7 @@ public class ArrayList<E> extends AbstractList<E>
      * empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA
      * will be expanded to DEFAULT_CAPACITY when the first element is added.
      */
-    transient Object[] elementData; // non-private to simplify nested class access
+    transient Object[] elementData; // non-private to simplify nested class access      // 真正存放元素的数组
 
     /**
      * The size of the ArrayList (the number of elements it contains).
@@ -148,7 +148,7 @@ public class ArrayList<E> extends AbstractList<E>
      * @throws IllegalArgumentException if the specified initial capacity
      *         is negative
      */
-    public ArrayList(int initialCapacity) {
+    public ArrayList(int initialCapacity) {     // 有参构造函数，初始化容量大小
         if (initialCapacity > 0) {
             this.elementData = new Object[initialCapacity];
         } else if (initialCapacity == 0) {
@@ -162,8 +162,7 @@ public class ArrayList<E> extends AbstractList<E>
     /**
      * Constructs an empty list with an initial capacity of ten.
      */
-    // 赋值为空数组
-    public ArrayList() {
+    public ArrayList() {        // 默认构造函数，初始化为空数组
         this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
     }
 
@@ -175,15 +174,15 @@ public class ArrayList<E> extends AbstractList<E>
      * @param c the collection whose elements are to be placed into this list
      * @throws NullPointerException if the specified collection is null
      */
-    public ArrayList(Collection<? extends E> c) {
+    public ArrayList(Collection<? extends E> c) {       // 有参构造函数，
         Object[] a = c.toArray();
-        if ((size = a.length) != 0) {
-            if (c.getClass() == ArrayList.class) {
+        if ((size = a.length) != 0) {       // 原集合不为空，
+            if (c.getClass() == ArrayList.class) {      // 如果原集合就是ArrayList，数组指向a
                 elementData = a;
             } else {
                 elementData = Arrays.copyOf(a, size, Object[].class);
             }
-        } else {
+        } else {        // 原集合为空
             // replace with empty array.
             elementData = EMPTY_ELEMENTDATA;
         }
@@ -194,12 +193,12 @@ public class ArrayList<E> extends AbstractList<E>
      * list's current size.  An application can use this operation to minimize
      * the storage of an <tt>ArrayList</tt> instance.
      */
-    public void trimToSize() {
+    public void trimToSize() {      // 将ArrayList的容量（数组长度）缩减到已存放元素的个数
         modCount++;
         if (size < elementData.length) {
             elementData = (size == 0)
               ? EMPTY_ELEMENTDATA
-              : Arrays.copyOf(elementData, size);
+              : Arrays.copyOf(elementData, size);       // 将elementData数组的长度缩减成size
         }
     }
 
@@ -225,24 +224,21 @@ public class ArrayList<E> extends AbstractList<E>
 
     private static int calculateCapacity(Object[] elementData, int minCapacity) {
         if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) {
-            // 如果数组为空，首次扩容长度为DEFAULT_CAPACITY，也就是10
-            return Math.max(DEFAULT_CAPACITY, minCapacity);
+            return Math.max(DEFAULT_CAPACITY, minCapacity);     // 如果数组为空，也就是首次初始化后添加元素，首次扩容长度为DEFAULT_CAPACITY，也就是10
         }
-        // 除了首次扩容以外，其余扩容长度为 minCapacity
-        return minCapacity;
+        return minCapacity;     // 除了首次扩容以外，其余扩容长度为 minCapacity
     }
 
     private void ensureCapacityInternal(int minCapacity) {
-        ensureExplicitCapacity(calculateCapacity(elementData, minCapacity));
+        ensureExplicitCapacity(calculateCapacity(elementData, minCapacity));        // 除了首次扩容，传入参数为10，其余传入参数为minCapacity
     }
 
-    private void ensureExplicitCapacity(int minCapacity) {
+    private void ensureExplicitCapacity(int minCapacity) {      // 首次扩容，minCapacity为10，
         modCount++;
 
         // overflow-conscious code
-        if (minCapacity - elementData.length > 0)
-            // 扩容真正执行的函数
-            grow(minCapacity);
+        if (minCapacity - elementData.length > 0)       // 如果需要的容量小于目前容量，就进行扩容
+            grow(minCapacity);      // 扩容真正执行的函数
     }
 
     /**
@@ -251,7 +247,7 @@ public class ArrayList<E> extends AbstractList<E>
      * Attempts to allocate larger arrays may result in
      * OutOfMemoryError: Requested array size exceeds VM limit
      */
-    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
+    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;        // 数组能分配的最大长度
 
     /**
      * Increases the capacity to ensure that it can hold at least the
@@ -259,20 +255,16 @@ public class ArrayList<E> extends AbstractList<E>
      *
      * @param minCapacity the desired minimum capacity
      */
-    // 扩容函数
-    private void grow(int minCapacity) {
+    private void grow(int minCapacity) {        // 扩容函数
         // overflow-conscious code
         int oldCapacity = elementData.length;
-        // 新的容量 = 老的容量 * 1.5
-        int newCapacity = oldCapacity + (oldCapacity >> 1);
+        int newCapacity = oldCapacity + (oldCapacity >> 1);     // 新的容量 = 老的容量 * 1.5
         if (newCapacity - minCapacity < 0)
             newCapacity = minCapacity;
-        // 如果新的容量 > MAX_ARRAY_SIZE，新的容量 = Integer.MAX_VALUE 或者 MAX_ARRAY_SIZE，取决于老的容量
-        if (newCapacity - MAX_ARRAY_SIZE > 0)
+        if (newCapacity - MAX_ARRAY_SIZE > 0)       // 如果新的容量 > MAX_ARRAY_SIZE，新的容量 = Integer.MAX_VALUE 或者 MAX_ARRAY_SIZE，取决于minCapacity
             newCapacity = hugeCapacity(minCapacity);
         // minCapacity is usually close to size, so this is a win:
-        // 通过copyOf函数扩容 elementData.length = newCapacity
-        elementData = Arrays.copyOf(elementData, newCapacity);
+        elementData = Arrays.copyOf(elementData, newCapacity);      // 通过copyOf函数扩容 elementData.length = newCapacity
     }
 
     private static int hugeCapacity(int minCapacity) {
@@ -280,7 +272,7 @@ public class ArrayList<E> extends AbstractList<E>
             throw new OutOfMemoryError();
         return (minCapacity > MAX_ARRAY_SIZE) ?
             Integer.MAX_VALUE :
-            MAX_ARRAY_SIZE;
+            MAX_ARRAY_SIZE;     // MAX_ARRAY_SIZE为Integer.MAX_VALUE - 8
     }
 
     /**
@@ -288,7 +280,7 @@ public class ArrayList<E> extends AbstractList<E>
      *
      * @return the number of elements in this list
      */
-    public int size() {
+    public int size() {     // 返回list中元素个数（不是数组的长度）
         return size;
     }
 
@@ -469,8 +461,8 @@ public class ArrayList<E> extends AbstractList<E>
      * @return <tt>true</tt> (as specified by {@link Collection#add})
      */
     public boolean add(E e) {
-        ensureCapacityInternal(size + 1);  // Increments modCount!!
-        elementData[size++] = e;
+        ensureCapacityInternal(size + 1);  // Increments modCount!!  判断size + 1与当前容量的大小，以及是否需要扩容
+        elementData[size++] = e;        // 添加元素
         return true;
     }
 
