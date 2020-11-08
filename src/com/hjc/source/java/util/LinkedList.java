@@ -103,7 +103,7 @@ public class LinkedList<E>
     /**
      * Constructs an empty list.
      */
-    public LinkedList() {
+    public LinkedList() {   // 默认构造函数
     }
 
     /**
@@ -124,9 +124,9 @@ public class LinkedList<E>
      */
     private void linkFirst(E e) {
         final Node<E> f = first;
-        final Node<E> newNode = new Node<>(null, e, f);
+        final Node<E> newNode = new Node<>(null, e, f);     // 初始化要插入到链表头的结点
         first = newNode;
-        if (f == null)
+        if (f == null)  // 如果链表为空（没有元素）
             last = newNode;
         else
             f.prev = newNode;
@@ -139,9 +139,9 @@ public class LinkedList<E>
      */
     void linkLast(E e) {
         final Node<E> l = last;
-        final Node<E> newNode = new Node<>(l, e, null);
+        final Node<E> newNode = new Node<>(l, e, null);     // 初始化要插入到链表尾的结点
         last = newNode;
-        if (l == null)
+        if (l == null)  // 如果链表为空（没有元素）
             first = newNode;
         else
             l.next = newNode;
@@ -171,11 +171,11 @@ public class LinkedList<E>
     private E unlinkFirst(Node<E> f) {
         // assert f == first && f != null;
         final E element = f.item;
-        final Node<E> next = f.next;
+        final Node<E> next = f.next;    // 获得头结点的后继结点
         f.item = null;
         f.next = null; // help GC
         first = next;
-        if (next == null)
+        if (next == null)   // 如果删除头结点后链表为空
             last = null;
         else
             next.prev = null;
@@ -190,11 +190,11 @@ public class LinkedList<E>
     private E unlinkLast(Node<E> l) {
         // assert l == last && l != null;
         final E element = l.item;
-        final Node<E> prev = l.prev;
+        final Node<E> prev = l.prev;    // 获得尾结点的前驱结点
         l.item = null;
         l.prev = null; // help GC
         last = prev;
-        if (prev == null)
+        if (prev == null)   // 如果删除了尾结点链表为空
             first = null;
         else
             prev.next = null;
@@ -206,11 +206,11 @@ public class LinkedList<E>
     /**
      * Unlinks non-null node x.
      */
-    E unlink(Node<E> x) {
+    E unlink(Node<E> x) {   // 删除指定结点
         // assert x != null;
         final E element = x.item;
-        final Node<E> next = x.next;
-        final Node<E> prev = x.prev;
+        final Node<E> next = x.next;    // 获得后继
+        final Node<E> prev = x.prev;    // 获得前驱
 
         if (prev == null) {
             first = next;
@@ -238,7 +238,7 @@ public class LinkedList<E>
      * @return the first element in this list
      * @throws NoSuchElementException if this list is empty
      */
-    public E getFirst() {
+    public E getFirst() {   // 获得链表头结点元素，和peek方法一样
         final Node<E> f = first;
         if (f == null)
             throw new NoSuchElementException();
@@ -264,7 +264,7 @@ public class LinkedList<E>
      * @return the first element from this list
      * @throws NoSuchElementException if this list is empty
      */
-    public E removeFirst() {
+    public E removeFirst() {    // 获得链表头结点元素，并删除头结点
         final Node<E> f = first;
         if (f == null)
             throw new NoSuchElementException();
@@ -334,7 +334,7 @@ public class LinkedList<E>
      * @param e element to be appended to this list
      * @return {@code true} (as specified by {@link Collection#add})
      */
-    public boolean add(E e) {
+    public boolean add(E e) {   // 和addLast方法一样
         linkLast(e);
         return true;
     }
@@ -473,8 +473,8 @@ public class LinkedList<E>
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     public E get(int index) {
-        checkElementIndex(index);
-        return node(index).item;
+        checkElementIndex(index);   // 检查index是否合法
+        return node(index).item;    // 首先获得index处的结点，再获取元素值
     }
 
     /**
@@ -487,10 +487,10 @@ public class LinkedList<E>
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     public E set(int index, E element) {
-        checkElementIndex(index);
-        Node<E> x = node(index);
+        checkElementIndex(index);   // 检查index是否合法[0, size)
+        Node<E> x = node(index);    // 获得位于index处的结点
         E oldVal = x.item;
-        x.item = element;
+        x.item = element;   // 改变结点元素值
         return oldVal;
     }
 
@@ -504,12 +504,12 @@ public class LinkedList<E>
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     public void add(int index, E element) {
-        checkPositionIndex(index);
+        checkPositionIndex(index);  // 检查index是否有效
 
-        if (index == size)
+        if (index == size)  // 插入到链表尾
             linkLast(element);
-        else
-            linkBefore(element, node(index));
+        else    // 插入到链表内
+            linkBefore(element, node(index));   // node(index)为index位置处的结点
     }
 
     /**
@@ -530,7 +530,7 @@ public class LinkedList<E>
      * Tells if the argument is the index of an existing element.
      */
     private boolean isElementIndex(int index) {
-        return index >= 0 && index < size;
+        return index >= 0 && index < size;      // index要在[0, size - 1]之间
     }
 
     /**
@@ -538,7 +538,7 @@ public class LinkedList<E>
      * iterator or an add operation.
      */
     private boolean isPositionIndex(int index) {
-        return index >= 0 && index <= size;
+        return index >= 0 && index <= size;     // index要在[0, size]之间（可以插入到链表尾）
     }
 
     /**
@@ -563,15 +563,15 @@ public class LinkedList<E>
     /**
      * Returns the (non-null) Node at the specified element index.
      */
-    Node<E> node(int index) {
+    Node<E> node(int index) {   // 返回index位置处的链表节点
         // assert isElementIndex(index);
 
-        if (index < (size >> 1)) {
+        if (index < (size >> 1)) {  // 如果index在链表前半段，就从前往后找
             Node<E> x = first;
             for (int i = 0; i < index; i++)
                 x = x.next;
             return x;
-        } else {
+        } else {    // index在链表后半段，就从后往前找
             Node<E> x = last;
             for (int i = size - 1; i > index; i--)
                 x = x.prev;
@@ -622,7 +622,7 @@ public class LinkedList<E>
      *         this list, or -1 if this list does not contain the element
      */
     public int lastIndexOf(Object o) {
-        int index = size;
+        int index = size;   // 从链表尾部开始
         if (o == null) {
             for (Node<E> x = last; x != null; x = x.prev) {
                 index--;
@@ -647,7 +647,7 @@ public class LinkedList<E>
      * @return the head of this list, or {@code null} if this list is empty
      * @since 1.5
      */
-    public E peek() {
+    public E peek() {   // 获得链表头结点元素
         final Node<E> f = first;
         return (f == null) ? null : f.item;
     }
@@ -659,7 +659,7 @@ public class LinkedList<E>
      * @throws NoSuchElementException if this list is empty
      * @since 1.5
      */
-    public E element() {
+    public E element() {    // 获得链表头结点元素，和peek方法一样
         return getFirst();
     }
 
@@ -669,7 +669,7 @@ public class LinkedList<E>
      * @return the head of this list, or {@code null} if this list is empty
      * @since 1.5
      */
-    public E poll() {
+    public E poll() {   // 获得链表头结点元素，并删除头结点
         final Node<E> f = first;
         return (f == null) ? null : unlinkFirst(f);
     }
@@ -681,7 +681,7 @@ public class LinkedList<E>
      * @throws NoSuchElementException if this list is empty
      * @since 1.5
      */
-    public E remove() {
+    public E remove() {     // 获得链表头结点元素，并删除头结点
         return removeFirst();
     }
 
@@ -692,7 +692,7 @@ public class LinkedList<E>
      * @return {@code true} (as specified by {@link Queue#offer})
      * @since 1.5
      */
-    public boolean offer(E e) {
+    public boolean offer(E e) {     // 添加元素到链表尾
         return add(e);
     }
 
@@ -704,7 +704,7 @@ public class LinkedList<E>
      * @return {@code true} (as specified by {@link Deque#offerFirst})
      * @since 1.6
      */
-    public boolean offerFirst(E e) {
+    public boolean offerFirst(E e) {    // 添加元素到链表头
         addFirst(e);
         return true;
     }
@@ -716,7 +716,7 @@ public class LinkedList<E>
      * @return {@code true} (as specified by {@link Deque#offerLast})
      * @since 1.6
      */
-    public boolean offerLast(E e) {
+    public boolean offerLast(E e) {     // 添加元素到链表尾
         addLast(e);
         return true;
     }
@@ -729,7 +729,7 @@ public class LinkedList<E>
      *         if this list is empty
      * @since 1.6
      */
-    public E peekFirst() {
+    public E peekFirst() {      // 获得链表头结点元素，不删除头结点
         final Node<E> f = first;
         return (f == null) ? null : f.item;
      }
@@ -742,7 +742,7 @@ public class LinkedList<E>
      *         if this list is empty
      * @since 1.6
      */
-    public E peekLast() {
+    public E peekLast() {   // 获得链表尾结点元素，不删除尾结点
         final Node<E> l = last;
         return (l == null) ? null : l.item;
     }
@@ -755,7 +755,7 @@ public class LinkedList<E>
      *     this list is empty
      * @since 1.6
      */
-    public E pollFirst() {
+    public E pollFirst() {  // 获得链表头节点元素，并删除头结点
         final Node<E> f = first;
         return (f == null) ? null : unlinkFirst(f);
     }
@@ -768,7 +768,7 @@ public class LinkedList<E>
      *     this list is empty
      * @since 1.6
      */
-    public E pollLast() {
+    public E pollLast() {   // 获得链表尾结点元素，并删除尾结点
         final Node<E> l = last;
         return (l == null) ? null : unlinkLast(l);
     }
@@ -782,7 +782,7 @@ public class LinkedList<E>
      * @param e the element to push
      * @since 1.6
      */
-    public void push(E e) {
+    public void push(E e) {     // 压入链表头
         addFirst(e);
     }
 
@@ -797,7 +797,7 @@ public class LinkedList<E>
      * @throws NoSuchElementException if this list is empty
      * @since 1.6
      */
-    public E pop() {
+    public E pop() {    // 元素弹出
         return removeFirst();
     }
 
@@ -810,7 +810,7 @@ public class LinkedList<E>
      * @return {@code true} if the list contained the specified element
      * @since 1.6
      */
-    public boolean removeFirstOccurrence(Object o) {
+    public boolean removeFirstOccurrence(Object o) {    // 删除从头第一次出现的元素结点
         return remove(o);
     }
 
@@ -967,10 +967,10 @@ public class LinkedList<E>
         }
     }
 
-    private static class Node<E> {
-        E item;
-        Node<E> next;
-        Node<E> prev;
+    private static class Node<E> {      // 内部类Node，定义了链表节点
+        E item;         // 元素值
+        Node<E> next;   // 前驱
+        Node<E> prev;   // 后继
 
         Node(Node<E> prev, E element, Node<E> next) {
             this.item = element;
