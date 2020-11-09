@@ -402,7 +402,7 @@ public class LinkedList<E>
      * @throws IndexOutOfBoundsException {@inheritDoc}
      * @throws NullPointerException if the specified collection is null
      */
-    public boolean addAll(int index, Collection<? extends E> c) {
+    public boolean addAll(int index, Collection<? extends E> c) {   // 将集合c中的元素依次插入链表index处
         checkPositionIndex(index);  // 检查index有效[0, size]
 
         Object[] a = c.toArray();
@@ -420,8 +420,8 @@ public class LinkedList<E>
         }
 
         for (Object o : a) {
-            @SuppressWarnings("unchecked") E e = (E) o;
-            Node<E> newNode = new Node<>(pred, e, null);
+            @SuppressWarnings("unchecked") E e = (E) o;          // 元素o强制转化为类型E，因为集合c中元素o的类型是E的子类或者就是E本身
+            Node<E> newNode = new Node<>(pred, e, null);    // 初始化要插入的结点，赋值为集合中的元素
             if (pred == null)   // 如果链表为空
                 first = newNode;
             else
@@ -432,7 +432,7 @@ public class LinkedList<E>
         if (succ == null) {     // 如果插入到链表尾部
             last = pred;
         } else {                // 插入到链表中部
-            pred.next = succ;   // 连接上后续的结点
+            pred.next = succ;   // 连接后续的结点
             succ.prev = pred;
         }
 
