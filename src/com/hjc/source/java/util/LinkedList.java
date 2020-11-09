@@ -212,14 +212,14 @@ public class LinkedList<E>
         final Node<E> next = x.next;    // 获得后继
         final Node<E> prev = x.prev;    // 获得前驱
 
-        if (prev == null) {
+        if (prev == null) {     // 前驱为空，删除的是头结点
             first = next;
         } else {
             prev.next = next;
             x.prev = null;
         }
 
-        if (next == null) {
+        if (next == null) {     // 后继为空，删除的是尾结点
             last = prev;
         } else {
             next.prev = prev;
@@ -383,8 +383,8 @@ public class LinkedList<E>
      * @return {@code true} if this list changed as a result of the call
      * @throws NullPointerException if the specified collection is null
      */
-    public boolean addAll(Collection<? extends E> c) {
-        return addAll(size, c);
+    public boolean addAll(Collection<? extends E> c) {  // 将集合c插入到链表中
+        return addAll(size, c);     // 将集合c的元素插入到size处（链表尾）
     }
 
     /**
@@ -403,7 +403,7 @@ public class LinkedList<E>
      * @throws NullPointerException if the specified collection is null
      */
     public boolean addAll(int index, Collection<? extends E> c) {
-        checkPositionIndex(index);
+        checkPositionIndex(index);  // 检查index有效[0, size]
 
         Object[] a = c.toArray();
         int numNew = a.length;
@@ -411,7 +411,7 @@ public class LinkedList<E>
             return false;
 
         Node<E> pred, succ;
-        if (index == size) {
+        if (index == size) {    // 插入到链表尾
             succ = null;
             pred = last;
         } else {
@@ -422,17 +422,17 @@ public class LinkedList<E>
         for (Object o : a) {
             @SuppressWarnings("unchecked") E e = (E) o;
             Node<E> newNode = new Node<>(pred, e, null);
-            if (pred == null)
+            if (pred == null)   // 如果链表为空
                 first = newNode;
             else
                 pred.next = newNode;
             pred = newNode;
         }
 
-        if (succ == null) {
+        if (succ == null) {     // 如果插入到链表尾部
             last = pred;
-        } else {
-            pred.next = succ;
+        } else {                // 插入到链表中部
+            pred.next = succ;   // 连接上后续的结点
             succ.prev = pred;
         }
 
@@ -452,12 +452,12 @@ public class LinkedList<E>
         // - is sure to free memory even if there is a reachable Iterator
         for (Node<E> x = first; x != null; ) {
             Node<E> next = x.next;
-            x.item = null;
+            x.item = null;      // 链表每个结点的属性都置为空
             x.next = null;
             x.prev = null;
             x = next;
         }
-        first = last = null;
+        first = last = null;    // 链表属性置为空
         size = 0;
         modCount++;
     }
@@ -473,7 +473,7 @@ public class LinkedList<E>
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     public E get(int index) {
-        checkElementIndex(index);   // 检查index是否合法
+        checkElementIndex(index);   // 检查index是否合法，[0, size - 1]
         return node(index).item;    // 首先获得index处的结点，再获取元素值
     }
 
@@ -823,16 +823,16 @@ public class LinkedList<E>
      * @return {@code true} if the list contained the specified element
      * @since 1.6
      */
-    public boolean removeLastOccurrence(Object o) {
+    public boolean removeLastOccurrence(Object o) {     // 删除最后一次出现的元素结点
         if (o == null) {
-            for (Node<E> x = last; x != null; x = x.prev) {
+            for (Node<E> x = last; x != null; x = x.prev) {     // 从后往前遍历
                 if (x.item == null) {
                     unlink(x);
                     return true;
                 }
             }
         } else {
-            for (Node<E> x = last; x != null; x = x.prev) {
+            for (Node<E> x = last; x != null; x = x.prev) {     // 从后往前遍历
                 if (o.equals(x.item)) {
                     unlink(x);
                     return true;
@@ -863,12 +863,12 @@ public class LinkedList<E>
      * @throws IndexOutOfBoundsException {@inheritDoc}
      * @see List#listIterator(int)
      */
-    public ListIterator<E> listIterator(int index) {
+    public ListIterator<E> listIterator(int index) {    // 返回链表的ListIterator迭代器，可以逆向遍历
         checkPositionIndex(index);
         return new ListItr(index);
     }
 
-    private class ListItr implements ListIterator<E> {
+    private class ListItr implements ListIterator<E> {  // 自定义类ListItr迭代器
         private Node<E> lastReturned;
         private Node<E> next;
         private int nextIndex;
@@ -876,7 +876,7 @@ public class LinkedList<E>
 
         ListItr(int index) {
             // assert isPositionIndex(index);
-            next = (index == size) ? null : node(index);
+            next = (index == size) ? null : node(index);    // next值为index位置的结点（index为size则为空）
             nextIndex = index;
         }
 
@@ -885,7 +885,7 @@ public class LinkedList<E>
         }
 
         public E next() {
-            checkForComodification();
+            checkForComodification();   // 检查链表是否被修改过，如果被修改过，则抛出异常。这里的修改指的是不经过迭代器修改
             if (!hasNext())
                 throw new NoSuchElementException();
 
@@ -1046,7 +1046,7 @@ public class LinkedList<E>
      * @return an array containing all of the elements in this list
      *         in proper sequence
      */
-    public Object[] toArray() {
+    public Object[] toArray() {     // 转换为数组
         Object[] result = new Object[size];
         int i = 0;
         for (Node<E> x = first; x != null; x = x.next)
@@ -1093,8 +1093,8 @@ public class LinkedList<E>
      * @throws NullPointerException if the specified array is null
      */
     @SuppressWarnings("unchecked")
-    public <T> T[] toArray(T[] a) {
-        if (a.length < size)
+    public <T> T[] toArray(T[] a) {     // 转换为数组，需要传入参数
+        if (a.length < size)    // 如果传入的数组容量不足，利用反射扩容
             a = (T[])java.lang.reflect.Array.newInstance(
                                 a.getClass().getComponentType(), size);
         int i = 0;
