@@ -79,7 +79,7 @@ public class Arrays {
     private static final int MIN_ARRAY_SORT_GRAN = 1 << 13;
 
     // Suppresses default constructor, ensuring non-instantiability.
-    private Arrays() {}
+    private Arrays() {}     // 私有构造函数，防止实例化，Arrays类中都是静态方法
 
     /**
      * A comparator that implements the natural ordering of a group of
@@ -96,7 +96,7 @@ public class Arrays {
      * public Object parallelSort methods use the same comparator
      * based implementation.
      */
-    static final class NaturalOrder implements Comparator<Object> {
+    static final class NaturalOrder implements Comparator<Object> {     // NaturalOrder比较器，默认比较器
         @SuppressWarnings("unchecked")
         public int compare(Object first, Object second) {
             return ((Comparable<Object>)first).compareTo(second);
@@ -108,7 +108,7 @@ public class Arrays {
      * Checks that {@code fromIndex} and {@code toIndex} are in
      * the range and throws an exception if they aren't.
      */
-    private static void rangeCheck(int arrayLength, int fromIndex, int toIndex) {
+    private static void rangeCheck(int arrayLength, int fromIndex, int toIndex) {   // 检查fromIndex和toIndex是否越界
         if (fromIndex > toIndex) {
             throw new IllegalArgumentException(
                     "fromIndex(" + fromIndex + ") > toIndex(" + toIndex + ")");
@@ -141,7 +141,7 @@ public class Arrays {
      * @param a the array to be sorted
      */
     public static void sort(int[] a) {
-        DualPivotQuicksort.sort(a, 0, a.length - 1, null, 0, 0);
+        DualPivotQuicksort.sort(a, 0, a.length - 1, null, 0, 0);    // 双轴快速排序
     }
 
     /**
