@@ -459,7 +459,7 @@ public class Arrays {
      *
      * @since 1.8
      */
-    public static void parallelSort(byte[] a) {
+    public static void parallelSort(byte[] a) {     // 并行排序
         int n = a.length, p, g;
         if (n <= MIN_ARRAY_SORT_GRAN ||
             (p = ForkJoinPool.getCommonPoolParallelism()) == 1)
@@ -1241,7 +1241,7 @@ public class Arrays {
      */
     public static void sort(Object[] a) {
         if (LegacyMergeSort.userRequested)
-            legacyMergeSort(a);
+            legacyMergeSort(a);     // 归并排序
         else
             ComparableTimSort.sort(a, 0, a.length, null, 0, 0);
     }
@@ -1335,7 +1335,7 @@ public class Arrays {
      * To be removed in a future release.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static void mergeSort(Object[] src,
+    private static void mergeSort(Object[] src,     // 归并排序核心，先对src数组进行排序，再复制到dest数组中
                                   Object[] dest,
                                   int low,
                                   int high,
@@ -1343,10 +1343,10 @@ public class Arrays {
         int length = high - low;
 
         // Insertion sort on smallest arrays
-        if (length < INSERTIONSORT_THRESHOLD) {
+        if (length < INSERTIONSORT_THRESHOLD) {     // 如果数组长度小于阈值，则采用插入排序
             for (int i=low; i<high; i++)
                 for (int j=i; j>low &&
-                         ((Comparable) dest[j-1]).compareTo(dest[j])>0; j--)
+                         ((Comparable) dest[j-1]).compareTo(dest[j])>0; j--)    // 如果前一个数大于后一个数，则交换这两个数
                     swap(dest, j, j-1);
             return;
         }
@@ -1362,16 +1362,16 @@ public class Arrays {
 
         // If list is already sorted, just copy from src to dest.  This is an
         // optimization that results in faster sorts for nearly ordered lists.
-        if (((Comparable)src[mid-1]).compareTo(src[mid]) <= 0) {
+        if (((Comparable)src[mid-1]).compareTo(src[mid]) <= 0) {    // 如果两段src数组中一段的所有元素比另一段都小，直接复制到dest数组中
             System.arraycopy(src, low, dest, destLow, length);
             return;
         }
 
         // Merge sorted halves (now in src) into dest
-        for(int i = destLow, p = low, q = mid; i < destHigh; i++) {
-            if (q >= high || p < mid && ((Comparable)src[p]).compareTo(src[q])<=0)
+        for(int i = destLow, p = low, q = mid; i < destHigh; i++) {     // 将两段排好序的src数组合并到dest数组中
+            if (q >= high || p < mid && ((Comparable)src[p]).compareTo(src[q])<=0)  // src[p] <= src[q]
                 dest[i] = src[p++];
-            else
+            else                                                                    // src[p] > src[q]
                 dest[i] = src[q++];
         }
     }
@@ -1532,7 +1532,7 @@ public class Arrays {
      * To be removed in a future release.
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private static void mergeSort(Object[] src,
+    private static void mergeSort(Object[] src,     // 使用比较器的归并排序核心
                                   Object[] dest,
                                   int low, int high, int off,
                                   Comparator c) {
@@ -1557,13 +1557,13 @@ public class Arrays {
 
         // If list is already sorted, just copy from src to dest.  This is an
         // optimization that results in faster sorts for nearly ordered lists.
-        if (c.compare(src[mid-1], src[mid]) <= 0) {
+        if (c.compare(src[mid-1], src[mid]) <= 0) {     // 如果两段src数组中一段的所有元素比另一端都小，直接复制到dest数组中
            System.arraycopy(src, low, dest, destLow, length);
            return;
         }
 
         // Merge sorted halves (now in src) into dest
-        for(int i = destLow, p = low, q = mid; i < destHigh; i++) {
+        for(int i = destLow, p = low, q = mid; i < destHigh; i++) {     // 两段src数组合并到dest数组中
             if (q >= high || p < mid && c.compare(src[p], src[q]) <= 0)
                 dest[i] = src[p++];
             else
@@ -1779,7 +1779,7 @@ public class Arrays {
      *         that this guarantees that the return value will be &gt;= 0 if
      *         and only if the key is found.
      */
-    public static int binarySearch(long[] a, long key) {
+    public static int binarySearch(long[] a, long key) {    // 二分查找
         return binarySearch0(a, 0, a.length, key);
     }
 
@@ -1822,7 +1822,7 @@ public class Arrays {
     }
 
     // Like public version, but without range checks.
-    private static int binarySearch0(long[] a, int fromIndex, int toIndex,
+    private static int binarySearch0(long[] a, int fromIndex, int toIndex,      // 二分查找核心
                                      long key) {
         int low = fromIndex;
         int high = toIndex - 1;
@@ -2243,7 +2243,7 @@ public class Arrays {
             else if (midVal > key)
                 high = mid - 1; // Neither val is NaN, thisVal is larger
             else {
-                long midBits = Double.doubleToLongBits(midVal);
+                long midBits = Double.doubleToLongBits(midVal);     // 浮点数转换为二进制表示，便于比较
                 long keyBits = Double.doubleToLongBits(key);
                 if (midBits == keyBits)     // Values are equal
                     return mid;             // Key found
@@ -2334,7 +2334,7 @@ public class Arrays {
             else if (midVal > key)
                 high = mid - 1; // Neither val is NaN, thisVal is larger
             else {
-                int midBits = Float.floatToIntBits(midVal);
+                int midBits = Float.floatToIntBits(midVal);     // 浮点数转换为二进制表示，便于比较
                 int keyBits = Float.floatToIntBits(key);
                 if (midBits == keyBits)     // Values are equal
                     return mid;             // Key found
@@ -2434,7 +2434,7 @@ public class Arrays {
         while (low <= high) {
             int mid = (low + high) >>> 1;
             @SuppressWarnings("rawtypes")
-            Comparable midVal = (Comparable)a[mid];
+            Comparable midVal = (Comparable)a[mid];     // Object类型强制转换为Comparable类型
             @SuppressWarnings("unchecked")
             int cmp = midVal.compareTo(key);
 
@@ -2531,7 +2531,7 @@ public class Arrays {
     }
 
     // Like public version, but without range checks.
-    private static <T> int binarySearch0(T[] a, int fromIndex, int toIndex,
+    private static <T> int binarySearch0(T[] a, int fromIndex, int toIndex,     // 带有比较器的二分查找
                                          T key, Comparator<? super T> c) {
         if (c == null) {
             return binarySearch0(a, fromIndex, toIndex, key);
@@ -2567,14 +2567,14 @@ public class Arrays {
      * @param a2 the other array to be tested for equality
      * @return <tt>true</tt> if the two arrays are equal
      */
-    public static boolean equals(long[] a, long[] a2) {
-        if (a==a2)
+    public static boolean equals(long[] a, long[] a2) {     // 比较两个数组是否相同
+        if (a==a2)                  // 二者指向同一地址，相同
             return true;
-        if (a==null || a2==null)
+        if (a==null || a2==null)    // 二者中一方为空，不相同
             return false;
 
         int length = a.length;
-        if (a2.length != length)
+        if (a2.length != length)    // 二者长度不同，不相同
             return false;
 
         for (int i=0; i<length; i++)
@@ -2758,7 +2758,7 @@ public class Arrays {
             return false;
 
         for (int i=0; i<length; i++)
-            if (Double.doubleToLongBits(a[i])!=Double.doubleToLongBits(a2[i]))
+            if (Double.doubleToLongBits(a[i])!=Double.doubleToLongBits(a2[i]))  // 浮点数比较时，应注意
                 return false;
 
         return true;
@@ -2842,7 +2842,7 @@ public class Arrays {
      * @param a the array to be filled
      * @param val the value to be stored in all elements of the array
      */
-    public static void fill(long[] a, long val) {
+    public static void fill(long[] a, long val) {   // 填充数组
         for (int i = 0, len = a.length; i < len; i++)
             a[i] = val;
     }
@@ -3177,7 +3177,7 @@ public class Arrays {
      * @since 1.6
      */
     @SuppressWarnings("unchecked")
-    public static <T> T[] copyOf(T[] original, int newLength) {
+    public static <T> T[] copyOf(T[] original, int newLength) {     // 复制原数组，返回新数组，新数组可以截断原数组或者扩容原数组
         return (T[]) copyOf(original, newLength, original.getClass());
     }
 
@@ -3207,11 +3207,11 @@ public class Arrays {
      */
     public static <T,U> T[] copyOf(U[] original, int newLength, Class<? extends T[]> newType) {     // 返回一个新的数组，注意与arraycopy方法区别
         @SuppressWarnings("unchecked")
-        T[] copy = ((Object)newType == (Object)Object[].class)
-            ? (T[]) new Object[newLength]
-            : (T[]) Array.newInstance(newType.getComponentType(), newLength);
-        System.arraycopy(original, 0, copy, 0,      // 内部调用了arraycopy方法
-                         Math.min(original.length, newLength));
+        T[] copy = ((Object)newType == (Object)Object[].class)      // 判断newType是否是Object数组
+            ? (T[]) new Object[newLength]                           // 直接分配数组
+            : (T[]) Array.newInstance(newType.getComponentType(), newLength);   // 不同，使用反射创建newType中元素类型的数组
+        System.arraycopy(original, 0, copy, 0,      // 内部调用了arraycopy方法进行复制
+                         Math.min(original.length, newLength));     // 只会复制填充original.length和newLength中的最小长度，如果newLength更大，那么其余部分填充null
         return copy;
     }
 
@@ -3479,7 +3479,7 @@ public class Arrays {
         if (newLength < 0)
             throw new IllegalArgumentException(from + " > " + to);
         @SuppressWarnings("unchecked")
-        T[] copy = ((Object)newType == (Object)Object[].class)
+        T[] copy = ((Object)newType == (Object)Object[].class)                  // 这部分实现同copyOf方法
             ? (T[]) new Object[newLength]
             : (T[]) Array.newInstance(newType.getComponentType(), newLength);
         System.arraycopy(original, from, copy, 0,
@@ -3591,7 +3591,7 @@ public class Arrays {
             throw new IllegalArgumentException(from + " > " + to);
         int[] copy = new int[newLength];
         System.arraycopy(original, from, copy, 0,
-                         Math.min(original.length - from, newLength));
+                         Math.min(original.length - from, newLength));      // newLength本身比original.length - from要小吧
         return copy;
     }
 
@@ -3796,21 +3796,21 @@ public class Arrays {
      */
     @SafeVarargs
     @SuppressWarnings("varargs")
-    public static <T> List<T> asList(T... a) {
-        return new ArrayList<>(a);
+    public static <T> List<T> asList(T... a) {  // 可变长参数
+        return new ArrayList<>(a);      // 返回自定义的ArrayList类，类中无add和remove方法，调用asList方法得到的List不能添加和删除元素
     }
 
     /**
      * @serial include
      */
-    private static class ArrayList<E> extends AbstractList<E>
+    private static class ArrayList<E> extends AbstractList<E>   // 自定义ArrayList类
         implements RandomAccess, java.io.Serializable
     {
         private static final long serialVersionUID = -2764017481108945198L;
         private final E[] a;
 
         ArrayList(E[] array) {
-            a = Objects.requireNonNull(array);
+            a = Objects.requireNonNull(array);      // 传入非空数组
         }
 
         @Override
@@ -3869,7 +3869,7 @@ public class Arrays {
         }
 
         @Override
-        public Spliterator<E> spliterator() {
+        public Spliterator<E> spliterator() {       // 自定义的ArrayList类中只有Spliterator迭代器，且没有add和remove方法，容器中的元素不能被添加和删除
             return Spliterators.spliterator(a, Spliterator.ORDERED);
         }
 
@@ -3918,7 +3918,7 @@ public class Arrays {
 
         int result = 1;
         for (long element : a) {
-            int elementHash = (int)(element ^ (element >>> 32));
+            int elementHash = (int)(element ^ (element >>> 32));    // long 64位，前32位和后32位进行异或
             result = 31 * result + elementHash;
         }
 
