@@ -4183,7 +4183,7 @@ public class Arrays {
 
         int result = 1;
 
-        for (Object element : a) {
+        for (Object element : a) {      // 针对数组中的每个元素类型，调用不同的hashCode方法
             int elementHash = 0;
             if (element instanceof Object[])
                 elementHash = deepHashCode((Object[]) element);
@@ -4274,7 +4274,7 @@ public class Arrays {
         return true;
     }
 
-    static boolean deepEquals0(Object e1, Object e2) {
+    static boolean deepEquals0(Object e1, Object e2) {      // 对于e1和e2，如果是数组类型，再调用对应的equals方法，如果不是数组类型，调用Object的equals方法
         assert e1 != null;
         boolean eq;
         if (e1 instanceof Object[] && e2 instanceof Object[])
@@ -4313,11 +4313,11 @@ public class Arrays {
      * @return a string representation of <tt>a</tt>
      * @since 1.5
      */
-    public static String toString(long[] a) {
-        if (a == null)
+    public static String toString(long[] a) {   // 数组以[e1, e2, ... , en]的格式返回
+        if (a == null)              // 如果引用为空(没有分配内存)，返回"null"
             return "null";
         int iMax = a.length - 1;
-        if (iMax == -1)
+        if (iMax == -1)             // 如果数组长度为0，返回"[]"
             return "[]";
 
         StringBuilder b = new StringBuilder();
@@ -4640,9 +4640,9 @@ public class Arrays {
             if (element == null) {
                 buf.append("null");
             } else {
-                Class<?> eClass = element.getClass();
+                Class<?> eClass = element.getClass();       // 获得数组元素的Class类
 
-                if (eClass.isArray()) {
+                if (eClass.isArray()) {         // 如果数组元素还是数组，调用对应的toString方法
                     if (eClass == byte[].class)
                         buf.append(toString((byte[]) element));
                     else if (eClass == short[].class)
@@ -4659,13 +4659,13 @@ public class Arrays {
                         buf.append(toString((double[]) element));
                     else if (eClass == boolean[].class)
                         buf.append(toString((boolean[]) element));
-                    else { // element is an array of object references
-                        if (dejaVu.contains(element))
+                    else { // element is an array of object references  数组元素是对象引用的数组(Object[])
+                        if (dejaVu.contains(element))       // 如果这个数组出现过
                             buf.append("[...]");
                         else
                             deepToString((Object[])element, buf, dejaVu);
                     }
-                } else {  // element is non-null and not an array
+                } else {  // element is non-null and not an array   数组元素不是数组
                     buf.append(element.toString());
                 }
             }
@@ -4692,7 +4692,7 @@ public class Arrays {
      * @throws NullPointerException if the generator is null
      * @since 1.8
      */
-    public static <T> void setAll(T[] array, IntFunction<? extends T> generator) {
+    public static <T> void setAll(T[] array, IntFunction<? extends T> generator) {      // 数组array中的每个元素经过generator转化
         Objects.requireNonNull(generator);
         for (int i = 0; i < array.length; i++)
             array[i] = generator.apply(i);
@@ -5000,7 +5000,7 @@ public class Arrays {
      * @return a {@code Stream} for the array
      * @since 1.8
      */
-    public static <T> Stream<T> stream(T[] array) {
+    public static <T> Stream<T> stream(T[] array) {         // 将数组转化为流
         return stream(array, 0, array.length);
     }
 
