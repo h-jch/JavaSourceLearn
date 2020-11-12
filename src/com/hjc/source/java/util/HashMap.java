@@ -708,7 +708,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                 Node<K,V> e;
                 if ((e = oldTab[j]) != null) {  // 数组元素不为空(当前索引处存在链表)
                     oldTab[j] = null;
-                    if (e.next == null)     // 链表只有头结点
+                    if (e.next == null)         // 链表只有头结点
                         newTab[e.hash & (newCap - 1)] = e;
                     else if (e instanceof TreeNode) // 红黑树结构存储，调用红黑树的接口
                         ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);
@@ -754,12 +754,12 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      */
     final void treeifyBin(Node<K,V>[] tab, int hash) {
         int n, index; Node<K,V> e;
-        if (tab == null || (n = tab.length) < MIN_TREEIFY_CAPACITY)
+        if (tab == null || (n = tab.length) < MIN_TREEIFY_CAPACITY)     // 数组为空或者数组长度不够，扩容数组
             resize();
         else if ((e = tab[index = (n - 1) & hash]) != null) {
             TreeNode<K,V> hd = null, tl = null;
             do {
-                TreeNode<K,V> p = replacementTreeNode(e, null);
+                TreeNode<K,V> p = replacementTreeNode(e, null);     // 将链表结点转化为树结点
                 if (tl == null)
                     hd = p;
                 else {
@@ -794,7 +794,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      *         (A <tt>null</tt> return can also indicate that the map
      *         previously associated <tt>null</tt> with <tt>key</tt>.)
      */
-    public V remove(Object key) {
+    public V remove(Object key) {   // 根据key删除结点
         Node<K,V> e;
         return (e = removeNode(hash(key), key, null, false, true)) == null ?
             null : e.value;
@@ -810,37 +810,37 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * @param movable if false do not move other nodes while removing
      * @return the node, or null if none
      */
-    final Node<K,V> removeNode(int hash, Object key, Object value,
-                               boolean matchValue, boolean movable) {
+    final Node<K,V> removeNode(int hash, Object key, Object value,      // matchValue为true时只有value相匹配才能删除
+                               boolean matchValue, boolean movable) {   // movable为false时不要移动其他结点
         Node<K,V>[] tab; Node<K,V> p; int n, index;
         if ((tab = table) != null && (n = tab.length) > 0 &&
-            (p = tab[index = (n - 1) & hash]) != null) {
+            (p = tab[index = (n - 1) & hash]) != null) {                // 找到结点所在链表
             Node<K,V> node = null, e; K k; V v;
             if (p.hash == hash &&
-                ((k = p.key) == key || (key != null && key.equals(k))))
+                ((k = p.key) == key || (key != null && key.equals(k)))) // 要删除的结点就是链表头
                 node = p;
-            else if ((e = p.next) != null) {
+            else if ((e = p.next) != null) {                            // 在链表中找要删除的结点
                 if (p instanceof TreeNode)
-                    node = ((TreeNode<K,V>)p).getTreeNode(hash, key);
+                    node = ((TreeNode<K,V>)p).getTreeNode(hash, key);   // 如果是红黑树结构，调用树的接口得到要删除的结点
                 else {
                     do {
                         if (e.hash == hash &&
                             ((k = e.key) == key ||
                              (key != null && key.equals(k)))) {
-                            node = e;
+                            node = e;                                   // 标记出链表中要删除的结点node，p是node的前驱
                             break;
                         }
                         p = e;
                     } while ((e = e.next) != null);
                 }
             }
-            if (node != null && (!matchValue || (v = node.value) == value ||
+            if (node != null && (!matchValue || (v = node.value) == value ||    // 如果标记的结点有效且能被删除
                                  (value != null && value.equals(v)))) {
-                if (node instanceof TreeNode)
+                if (node instanceof TreeNode)                                   // 是红黑树结点就调用对应接口删除
                     ((TreeNode<K,V>)node).removeTreeNode(this, tab, movable);
-                else if (node == p)
+                else if (node == p)             // 是链表头结点
                     tab[index] = node.next;
-                else
+                else                            // 是链表内结点
                     p.next = node.next;
                 ++modCount;
                 --size;
@@ -855,12 +855,12 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * Removes all of the mappings from this map.
      * The map will be empty after this call returns.
      */
-    public void clear() {
+    public void clear() {   // 清除所有结点
         Node<K,V>[] tab;
         modCount++;
         if ((tab = table) != null && size > 0) {
             size = 0;
-            for (int i = 0; i < tab.length; ++i)
+            for (int i = 0; i < tab.length; ++i)    // 释放数组中的每条链表
                 tab[i] = null;
         }
     }
@@ -873,7 +873,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * @return <tt>true</tt> if this map maps one or more keys to the
      *         specified value
      */
-    public boolean containsValue(Object value) {
+    public boolean containsValue(Object value) {    // 查找value，需要遍历链表数组
         Node<K,V>[] tab; V v;
         if ((tab = table) != null && size > 0) {
             for (int i = 0; i < tab.length; ++i) {
@@ -902,8 +902,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      *
      * @return a set view of the keys contained in this map
      */
-    public Set<K> keySet() {
-        Set<K> ks = keySet;
+    public Set<K> keySet() {    // 初始化并返回keySet
+        Set<K> ks = keySet;     // keySet从AbstractMap中继承
         if (ks == null) {
             ks = new KeySet();
             keySet = ks;
@@ -911,12 +911,12 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         return ks;
     }
 
-    final class KeySet extends AbstractSet<K> {
-        public final int size()                 { return size; }
-        public final void clear()               { HashMap.this.clear(); }
+    final class KeySet extends AbstractSet<K> {     // 自定义KeySet类，静态内部类方法改变外部类的属性
+        public final int size()                 { return size; }    // 返回外部类属性
+        public final void clear()               { HashMap.this.clear(); }   // 调用外部类方法
         public final Iterator<K> iterator()     { return new KeyIterator(); }
-        public final boolean contains(Object o) { return containsKey(o); }
-        public final boolean remove(Object key) {
+        public final boolean contains(Object o) { return containsKey(o); }  // 调用外部类方法
+        public final boolean remove(Object key) {   // 调用外部类方法
             return removeNode(hash(key), key, null, false, true) != null;
         }
         public final Spliterator<K> spliterator() {
@@ -953,8 +953,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      *
      * @return a view of the values contained in this map
      */
-    public Collection<V> values() {
-        Collection<V> vs = values;
+    public Collection<V> values() {     // 初始化并返回values
+        Collection<V> vs = values;      // values继承自AbstractMap
         if (vs == null) {
             vs = new Values();
             values = vs;
@@ -962,7 +962,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         return vs;
     }
 
-    final class Values extends AbstractCollection<V> {
+    final class Values extends AbstractCollection<V> {      // 自定义Values类，作用同KeySet类
         public final int size()                 { return size; }
         public final void clear()               { HashMap.this.clear(); }
         public final Iterator<V> iterator()     { return new ValueIterator(); }
@@ -1002,19 +1002,19 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      *
      * @return a set view of the mappings contained in this map
      */
-    public Set<Map.Entry<K,V>> entrySet() {
+    public Set<Map.Entry<K,V>> entrySet() {     // 初始化并返回entrySet
         Set<Map.Entry<K,V>> es;
         return (es = entrySet) == null ? (entrySet = new EntrySet()) : es;
     }
 
-    final class EntrySet extends AbstractSet<Map.Entry<K,V>> {
+    final class EntrySet extends AbstractSet<Map.Entry<K,V>> {      // 自定义EntrySet类，作用同KeySet类
         public final int size()                 { return size; }
         public final void clear()               { HashMap.this.clear(); }
         public final Iterator<Map.Entry<K,V>> iterator() {
             return new EntryIterator();
         }
         public final boolean contains(Object o) {
-            if (!(o instanceof Map.Entry))
+            if (!(o instanceof Map.Entry))      // 需要参数类型为Map.Entry
                 return false;
             Map.Entry<?,?> e = (Map.Entry<?,?>) o;
             Object key = e.getKey();
