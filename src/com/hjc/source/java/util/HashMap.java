@@ -564,7 +564,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * @param key the key
      * @return the node, or null if none
      */
-    final Node<K,V> getNode(int hash, Object key) {
+    final Node<K,V> getNode(int hash, Object key) {     // 根据key值找对应结点
         Node<K,V>[] tab; Node<K,V> first, e; int n; K k;
         if ((tab = table) != null && (n = tab.length) > 0 &&    // table数组已创建，且根据hash值能找到链表头 tab[(n - 1) & hash]
             (first = tab[(n - 1) & hash]) != null) {
@@ -581,7 +581,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                 } while ((e = e.next) != null);
             }
         }
-        return null;
+        return null;        // 不存在，返回null
     }
 
     /**
@@ -652,8 +652,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             }
             if (e != null) { // existing mapping for key  key已存在，替换value
                 V oldValue = e.value;
-                if (!onlyIfAbsent || oldValue == null)  // onlyIfAbsent为false或者结点不存在value
-                    e.value = value;
+                if (!onlyIfAbsent || oldValue == null)  // onlyIfAbsent为false或者结点不存在value，改变结点的value
+                    e.value = value;                    // onlyIfAbsent为true，不管结点存不存在，不允许改变结点的value
                 afterNodeAccess(e);
                 return oldValue;
             }
@@ -834,8 +834,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                     } while ((e = e.next) != null);
                 }
             }
-            if (node != null && (!matchValue || (v = node.value) == value ||    // 如果标记的结点有效且能被删除
-                                 (value != null && value.equals(v)))) {
+            if (node != null && (!matchValue || (v = node.value) == value ||    // 如果标记的结点有效且能被删除，matchValue为false，不管value是否匹配，都删除
+                                 (value != null && value.equals(v)))) {         // matchValue为true，只有结点的value匹配，才能被删除
                 if (node instanceof TreeNode)                                   // 是红黑树结点就调用对应接口删除
                     ((TreeNode<K,V>)node).removeTreeNode(this, tab, movable);
                 else if (node == p)             // 是链表头结点
@@ -1054,23 +1054,23 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     @Override
     public V getOrDefault(Object key, V defaultValue) {
         Node<K,V> e;
-        return (e = getNode(hash(key), key)) == null ? defaultValue : e.value;
+        return (e = getNode(hash(key), key)) == null ? defaultValue : e.value;  // e不存在，返回默认值defaultValue，e存在，返回e的value
     }
 
     @Override
     public V putIfAbsent(K key, V value) {
-        return putVal(hash(key), key, value, true, true);
+        return putVal(hash(key), key, value, true, true);   // 如果key已经存在，则不更新value值
     }
 
     @Override
     public boolean remove(Object key, Object value) {
-        return removeNode(hash(key), key, value, true, true) != null;
+        return removeNode(hash(key), key, value, true, true) != null;   // 结点的key和value都匹配时，才删除结点
     }
 
     @Override
     public boolean replace(K key, V oldValue, V newValue) {
         Node<K,V> e; V v;
-        if ((e = getNode(hash(key), key)) != null &&
+        if ((e = getNode(hash(key), key)) != null &&    // 先根据key找到结点，再判断结点的value是否匹配，最后进行替换
             ((v = e.value) == oldValue || (v != null && v.equals(oldValue)))) {
             e.value = newValue;
             afterNodeAccess(e);
@@ -1082,7 +1082,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     @Override
     public V replace(K key, V value) {
         Node<K,V> e;
-        if ((e = getNode(hash(key), key)) != null) {
+        if ((e = getNode(hash(key), key)) != null) {    // 根据key找到结点后直接替换
             V oldValue = e.value;
             e.value = value;
             afterNodeAccess(e);
@@ -1324,7 +1324,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     public Object clone() {
         HashMap<K,V> result;
         try {
-            result = (HashMap<K,V>)super.clone();
+            result = (HashMap<K,V>)super.clone();   // 浅复制
         } catch (CloneNotSupportedException e) {
             // this shouldn't happen, since we are Cloneable
             throw new InternalError(e);
@@ -1418,7 +1418,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     /* ------------------------------------------------------------ */
     // iterators
 
-    abstract class HashIterator {
+    abstract class HashIterator {   // 自定义抽象类
         Node<K,V> next;        // next entry to return
         Node<K,V> current;     // current entry
         int expectedModCount;  // for fast-fail
@@ -1445,8 +1445,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                 throw new ConcurrentModificationException();
             if (e == null)
                 throw new NoSuchElementException();
-            if ((next = (current = e).next) == null && (t = table) != null) {
-                do {} while (index < t.length && (next = t[index++]) == null);
+            if ((next = (current = e).next) == null && (t = table) != null) {   // 更新next的值：如果next已经到达了一条链表的尾部
+                do {} while (index < t.length && (next = t[index++]) == null);  // 换到下一条链表的头部
             }
             return e;
         }
@@ -1804,7 +1804,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * extends Node) so can be used as extension of either regular or
      * linked node.
      */
-    static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
+    static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {     // 红黑树结点
         TreeNode<K,V> parent;  // red-black tree links
         TreeNode<K,V> left;
         TreeNode<K,V> right;
@@ -1818,7 +1818,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
          * Returns root of tree containing this node.
          */
         final TreeNode<K,V> root() {
-            for (TreeNode<K,V> r = this, p;;) {
+            for (TreeNode<K,V> r = this, p;;) {     // 向上溯源找到根结点
                 if ((p = r.parent) == null)
                     return r;
                 r = p;
