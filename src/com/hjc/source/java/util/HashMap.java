@@ -875,9 +875,9 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      */
     public boolean containsValue(Object value) {    // 查找value，需要遍历链表数组
         Node<K,V>[] tab; V v;
-        if ((tab = table) != null && size > 0) {
-            for (int i = 0; i < tab.length; ++i) {
-                for (Node<K,V> e = tab[i]; e != null; e = e.next) {
+        if ((tab = table) != null && size > 0) {    // 数组存在
+            for (int i = 0; i < tab.length; ++i) {      // 遍历链表数组
+                for (Node<K,V> e = tab[i]; e != null; e = e.next) {     // 遍历链表
                     if ((v = e.value) == value ||
                         (value != null && value.equals(v)))
                         return true;
