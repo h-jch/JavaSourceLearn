@@ -93,16 +93,16 @@ public class HashSet<E>
 {
     static final long serialVersionUID = -5024744406713321676L;
 
-    private transient HashMap<E,Object> map;
+    private transient HashMap<E,Object> map;    // 内部使用HashMap，存储key，调用map的接口
 
     // Dummy value to associate with an Object in the backing Map
-    private static final Object PRESENT = new Object();
+    private static final Object PRESENT = new Object();     // map中存放的value值是一个空的Object对象
 
     /**
      * Constructs a new, empty set; the backing <tt>HashMap</tt> instance has
      * default initial capacity (16) and load factor (0.75).
      */
-    public HashSet() {
+    public HashSet() {      // 默认构造函数
         map = new HashMap<>();
     }
 
@@ -170,7 +170,7 @@ public class HashSet<E>
      * @see ConcurrentModificationException
      */
     public Iterator<E> iterator() {
-        return map.keySet().iterator();
+        return map.keySet().iterator();     // 值存储在map的key内，所以返回keySet的iterator
     }
 
     /**
@@ -217,7 +217,7 @@ public class HashSet<E>
      * element
      */
     public boolean add(E e) {
-        return map.put(e, PRESENT)==null;
+        return map.put(e, PRESENT)==null;   // PRESENT为空的Object对象
     }
 
     /**
@@ -233,7 +233,7 @@ public class HashSet<E>
      * @return <tt>true</tt> if the set contained the specified element
      */
     public boolean remove(Object o) {
-        return map.remove(o)==PRESENT;
+        return map.remove(o)==PRESENT;      // remove方法返回的是结点的value值
     }
 
     /**

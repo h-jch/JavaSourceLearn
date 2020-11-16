@@ -629,7 +629,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             n = (tab = resize()).length;
         if ((p = tab[i = (n - 1) & hash]) == null)  // 根据hash值找到相应的链表，如果链表为空，则创建一个结点插入
             tab[i] = newNode(hash, key, value, null);
-        else {
+        else {                  // 处理冲突
             Node<K,V> e; K k;
             if (p.hash == hash &&       // 先检查链表头的hash值和key值是否和方法参数相同，相同则代表要插入的key值已存在，只需替换value，结点记为e
                 ((k = p.key) == key || (key != null && key.equals(k))))
