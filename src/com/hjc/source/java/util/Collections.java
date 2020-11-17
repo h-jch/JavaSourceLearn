@@ -81,7 +81,7 @@ import sun.misc.SharedSecrets;
 
 public class Collections {
     // Suppresses default constructor, ensuring non-instantiability.
-    private Collections() {
+    private Collections() {     // 包含静态方法的类，构造函数私有化
     }
 
     // Algorithms
@@ -140,7 +140,7 @@ public class Collections {
      */
     @SuppressWarnings("unchecked")
     public static <T extends Comparable<? super T>> void sort(List<T> list) {
-        list.sort(null);
+        list.sort(null);    // 对List进行排序，调用List接口的sort方法的默认实现，具体调用得看实现类有没有覆盖此方法
     }
 
     /**
@@ -211,20 +211,20 @@ public class Collections {
      */
     public static <T>
     int binarySearch(List<? extends Comparable<? super T>> list, T key) {
-        if (list instanceof RandomAccess || list.size()<BINARYSEARCH_THRESHOLD)
+        if (list instanceof RandomAccess || list.size()<BINARYSEARCH_THRESHOLD) // list支持随机访问或者list长度小于二分查找阈值
             return Collections.indexedBinarySearch(list, key);
         else
             return Collections.iteratorBinarySearch(list, key);
     }
 
     private static <T>
-    int indexedBinarySearch(List<? extends Comparable<? super T>> list, T key) {
+    int indexedBinarySearch(List<? extends Comparable<? super T>> list, T key) {    // 基于索引的二分查找
         int low = 0;
         int high = list.size()-1;
 
         while (low <= high) {
             int mid = (low + high) >>> 1;
-            Comparable<? super T> midVal = list.get(mid);
+            Comparable<? super T> midVal = list.get(mid);   // 基于索引的随机访问
             int cmp = midVal.compareTo(key);
 
             if (cmp < 0)
@@ -238,7 +238,7 @@ public class Collections {
     }
 
     private static <T>
-    int iteratorBinarySearch(List<? extends Comparable<? super T>> list, T key)
+    int iteratorBinarySearch(List<? extends Comparable<? super T>> list, T key)     // 基于迭代器的二分查找
     {
         int low = 0;
         int high = list.size()-1;
@@ -246,7 +246,7 @@ public class Collections {
 
         while (low <= high) {
             int mid = (low + high) >>> 1;
-            Comparable<? super T> midVal = get(i, mid);
+            Comparable<? super T> midVal = get(i, mid);     // 基于迭代器的结点访问
             int cmp = midVal.compareTo(key);
 
             if (cmp < 0)
@@ -263,7 +263,7 @@ public class Collections {
      * Gets the ith element from the given list by repositioning the specified
      * list listIterator.
      */
-    private static <T> T get(ListIterator<? extends T> i, int index) {
+    private static <T> T get(ListIterator<? extends T> i, int index) {  // 通过迭代器获得索引处的元素
         T obj = null;
         int pos = i.nextIndex();
         if (pos <= index) {
@@ -314,7 +314,7 @@ public class Collections {
      *         elements of the list using this comparator.
      */
     @SuppressWarnings("unchecked")
-    public static <T> int binarySearch(List<? extends T> list, T key, Comparator<? super T> c) {
+    public static <T> int binarySearch(List<? extends T> list, T key, Comparator<? super T> c) {    // 加入比较器
         if (c==null)
             return binarySearch((List<? extends Comparable<? super T>>) list, key);
 
@@ -331,7 +331,7 @@ public class Collections {
         while (low <= high) {
             int mid = (low + high) >>> 1;
             T midVal = l.get(mid);
-            int cmp = c.compare(midVal, key);
+            int cmp = c.compare(midVal, key);   // 通过比较器比较二者的值
 
             if (cmp < 0)
                 low = mid + 1;
@@ -375,15 +375,15 @@ public class Collections {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static void reverse(List<?> list) {
         int size = list.size();
-        if (size < REVERSE_THRESHOLD || list instanceof RandomAccess) {
+        if (size < REVERSE_THRESHOLD || list instanceof RandomAccess) {     // list长度小于翻转阈值或者list支持随机访问
             for (int i=0, mid=size>>1, j=size-1; i<mid; i++, j--)
-                swap(list, i, j);
+                swap(list, i, j);   // 首尾交换
         } else {
             // instead of using a raw type here, it's possible to capture
             // the wildcard but it will require a call to a supplementary
             // private method
-            ListIterator fwd = list.listIterator();
-            ListIterator rev = list.listIterator(size);
+            ListIterator fwd = list.listIterator();     // 指向头结点的迭代器
+            ListIterator rev = list.listIterator(size); // 指向尾结点的迭代器
             for (int i=0, mid=list.size()>>1; i<mid; i++) {
                 Object tmp = fwd.next();
                 fwd.set(rev.previous());
@@ -423,7 +423,7 @@ public class Collections {
     public static void shuffle(List<?> list) {
         Random rnd = r;
         if (rnd == null)
-            r = rnd = new Random(); // harmless race.
+            r = rnd = new Random(); // harmless race.   单例模式
         shuffle(list, rnd);
     }
 
@@ -455,14 +455,14 @@ public class Collections {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static void shuffle(List<?> list, Random rnd) {
         int size = list.size();
-        if (size < SHUFFLE_THRESHOLD || list instanceof RandomAccess) {
+        if (size < SHUFFLE_THRESHOLD || list instanceof RandomAccess) {     // list长度小于洗牌阈值或者list支持随机访问
             for (int i=size; i>1; i--)
-                swap(list, i-1, rnd.nextInt(i));
+                swap(list, i-1, rnd.nextInt(i));    // 从list尾部开始遍历，随机将list内的元素与list尾部的元素进行交换，从而确定list尾部的元素
         } else {
-            Object[] arr = list.toArray();
+            Object[] arr = list.toArray();  // 将list转换为数组
 
             // Shuffle array
-            for (int i=size; i>1; i--)
+            for (int i=size; i>1; i--)      // 对数组进行洗牌
                 swap(arr, i-1, rnd.nextInt(i));
 
             // Dump array back into list
@@ -470,7 +470,7 @@ public class Collections {
             // the wildcard but it will require a call to a supplementary
             // private method
             ListIterator it = list.listIterator();
-            for (int i=0; i<arr.length; i++) {
+            for (int i=0; i<arr.length; i++) {  // 用迭代器对list赋值
                 it.next();
                 it.set(arr[i]);
             }
@@ -496,7 +496,7 @@ public class Collections {
         // the wildcard but it will require a call to a supplementary
         // private method
         final List l = list;
-        l.set(i, l.set(j, l.get(i)));
+        l.set(i, l.set(j, l.get(i)));   // set方法返回旧值
     }
 
     /**
@@ -523,7 +523,7 @@ public class Collections {
     public static <T> void fill(List<? super T> list, T obj) {
         int size = list.size();
 
-        if (size < FILL_THRESHOLD || list instanceof RandomAccess) {
+        if (size < FILL_THRESHOLD || list instanceof RandomAccess) {    // list长度小于填充阈值或者list支持随机访问
             for (int i=0; i<size; i++)
                 list.set(i, obj);
         } else {
@@ -558,7 +558,7 @@ public class Collections {
             throw new IndexOutOfBoundsException("Source does not fit in dest");
 
         if (srcSize < COPY_THRESHOLD ||
-            (src instanceof RandomAccess && dest instanceof RandomAccess)) {
+            (src instanceof RandomAccess && dest instanceof RandomAccess)) {    // list长度小于复制阈值或者list支持随机访问
             for (int i=0; i<srcSize; i++)
                 dest.set(i, src.get(i));
         } else {
@@ -594,12 +594,12 @@ public class Collections {
      * @see Comparable
      */
     public static <T extends Object & Comparable<? super T>> T min(Collection<? extends T> coll) {
-        Iterator<? extends T> i = coll.iterator();
+        Iterator<? extends T> i = coll.iterator();  // 使用迭代器迭代
         T candidate = i.next();
 
         while (i.hasNext()) {
             T next = i.next();
-            if (next.compareTo(candidate) < 0)
+            if (next.compareTo(candidate) < 0)  // if (next < candidate)
                 candidate = next;
         }
         return candidate;
@@ -638,7 +638,7 @@ public class Collections {
 
         while (i.hasNext()) {
             T next = i.next();
-            if (comp.compare(next, candidate) < 0)
+            if (comp.compare(next, candidate) < 0)  // if (next < candidate)
                 candidate = next;
         }
         return candidate;
@@ -672,7 +672,7 @@ public class Collections {
 
         while (i.hasNext()) {
             T next = i.next();
-            if (next.compareTo(candidate) > 0)
+            if (next.compareTo(candidate) > 0)  // if (next > candidate)
                 candidate = next;
         }
         return candidate;
@@ -711,7 +711,7 @@ public class Collections {
 
         while (i.hasNext()) {
             T next = i.next();
-            if (comp.compare(next, candidate) > 0)
+            if (comp.compare(next, candidate) > 0)  // if (next > candidate)
                 candidate = next;
         }
         return candidate;
