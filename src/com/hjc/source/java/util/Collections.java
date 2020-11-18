@@ -772,8 +772,8 @@ public class Collections {
      *         its list-iterator does not support the <tt>set</tt> operation.
      * @since 1.4
      */
-    public static void rotate(List<?> list, int distance) {
-        if (list instanceof RandomAccess || list.size() < ROTATE_THRESHOLD)
+    public static void rotate(List<?> list, int distance) {     // 将list右移distance位，distance可正可负
+        if (list instanceof RandomAccess || list.size() < ROTATE_THRESHOLD)     // list长度小于旋转阈值或者list支持随机访问
             rotate1(list, distance);
         else
             rotate2(list, distance);
@@ -783,9 +783,9 @@ public class Collections {
         int size = list.size();
         if (size == 0)
             return;
-        distance = distance % size;
+        distance = distance % size;     // distance对list长度取模
         if (distance < 0)
-            distance += size;
+            distance += size;   // distance < 0 代表左移，相当于右移distance + size位
         if (distance == 0)
             return;
 
@@ -796,7 +796,7 @@ public class Collections {
                 i += distance;
                 if (i >= size)
                     i -= size;
-                displaced = list.set(i, displaced);
+                displaced = list.set(i, displaced);     // 将list中i位置的元素设为i - distance位置的元素
                 nMoved ++;
             } while (i != cycleStart);
         }
@@ -812,9 +812,9 @@ public class Collections {
         if (mid == 0)
             return;
 
-        reverse(list.subList(0, mid));
-        reverse(list.subList(mid, size));
-        reverse(list);
+        reverse(list.subList(0, mid));      // 先翻转list前半部分
+        reverse(list.subList(mid, size));   // 再翻转list后半部分
+        reverse(list);                      // 最后翻转整个list
     }
 
     /**
@@ -839,8 +839,8 @@ public class Collections {
     public static <T> boolean replaceAll(List<T> list, T oldVal, T newVal) {
         boolean result = false;
         int size = list.size();
-        if (size < REPLACEALL_THRESHOLD || list instanceof RandomAccess) {
-            if (oldVal==null) {
+        if (size < REPLACEALL_THRESHOLD || list instanceof RandomAccess) {  // list长度小于替换阈值或者list支持随机访问
+            if (oldVal==null) {                 // oldVal是否为空，比较方式不同，一个为==，一个为equals
                 for (int i=0; i<size; i++) {
                     if (list.get(i)==null) {
                         list.set(i, newVal);
@@ -856,7 +856,7 @@ public class Collections {
                 }
             }
         } else {
-            ListIterator<T> itr=list.listIterator();
+            ListIterator<T> itr=list.listIterator();    // 使用迭代器迭代
             if (oldVal==null) {
                 for (int i=0; i<size; i++) {
                     if (itr.next()==null) {
@@ -901,14 +901,14 @@ public class Collections {
         int targetSize = target.size();
         int maxCandidate = sourceSize - targetSize;
 
-        if (sourceSize < INDEXOFSUBLIST_THRESHOLD ||
+        if (sourceSize < INDEXOFSUBLIST_THRESHOLD ||        // list长度小于阈值或者list支持随机访问
             (source instanceof RandomAccess&&target instanceof RandomAccess)) {
         nextCand:
-            for (int candidate = 0; candidate <= maxCandidate; candidate++) {
-                for (int i=0, j=candidate; i<targetSize; i++, j++)
+            for (int candidate = 0; candidate <= maxCandidate; candidate++) {   // candidate位于source
+                for (int i=0, j=candidate; i<targetSize; i++, j++)      // i位于target，j位于source，如果不相等，进行下一次循环，candidate++
                     if (!eq(target.get(i), source.get(j)))
                         continue nextCand;  // Element mismatch, try next cand
-                return candidate;  // All elements of candidate matched target
+                return candidate;  // All elements of candidate matched target      target中所有元素都和source中candidate开始的元素相等
             }
         } else {  // Iterator version of above algorithm
             ListIterator<?> si = source.listIterator();
@@ -918,7 +918,7 @@ public class Collections {
                 for (int i=0; i<targetSize; i++) {
                     if (!eq(ti.next(), si.next())) {
                         // Back up source iterator to next candidate
-                        for (int j=0; j<i; j++)
+                        for (int j=0; j<i; j++)     // 如果不相等，将source的迭代器退回到起始位置的下一元素
                             si.previous();
                         continue nextCand;
                     }
@@ -949,7 +949,7 @@ public class Collections {
      *         is no such occurrence.
      * @since  1.4
      */
-    public static int lastIndexOfSubList(List<?> source, List<?> target) {
+    public static int lastIndexOfSubList(List<?> source, List<?> target) {  // 方法实现同上
         int sourceSize = source.size();
         int targetSize = target.size();
         int maxCandidate = sourceSize - targetSize;
@@ -1012,7 +1012,7 @@ public class Collections {
      * @return an unmodifiable view of the specified collection.
      */
     public static <T> Collection<T> unmodifiableCollection(Collection<? extends T> c) {
-        return new UnmodifiableCollection<>(c);
+        return new UnmodifiableCollection<>(c);     // 返回一个不能被修改的集合
     }
 
     /**
@@ -1021,7 +1021,7 @@ public class Collections {
     static class UnmodifiableCollection<E> implements Collection<E>, Serializable {
         private static final long serialVersionUID = 1820017752578914078L;
 
-        final Collection<? extends E> c;
+        final Collection<? extends E> c;    // final修饰，引用c不能被更改
 
         UnmodifiableCollection(Collection<? extends E> c) {
             if (c==null)
@@ -1043,7 +1043,7 @@ public class Collections {
                 public boolean hasNext() {return i.hasNext();}
                 public E next()          {return i.next();}
                 public void remove() {
-                    throw new UnsupportedOperationException();
+                    throw new UnsupportedOperationException();  // 不支持通过迭代器修改集合
                 }
                 @Override
                 public void forEachRemaining(Consumer<? super E> action) {
@@ -1052,7 +1052,7 @@ public class Collections {
                 }
             };
         }
-
+        // 不支持直接修改集合
         public boolean add(E e) {
             throw new UnsupportedOperationException();
         }
@@ -1117,13 +1117,13 @@ public class Collections {
      * @return an unmodifiable view of the specified set.
      */
     public static <T> Set<T> unmodifiableSet(Set<? extends T> s) {
-        return new UnmodifiableSet<>(s);
+        return new UnmodifiableSet<>(s);    // 返回一个不能被修改的Set
     }
 
     /**
      * @serial include
      */
-    static class UnmodifiableSet<E> extends UnmodifiableCollection<E>
+    static class UnmodifiableSet<E> extends UnmodifiableCollection<E>   // 方法继承UnmodifiableCollection
                                  implements Set<E>, Serializable {
         private static final long serialVersionUID = -9215047833775013803L;
 
