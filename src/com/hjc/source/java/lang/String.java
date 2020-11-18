@@ -108,10 +108,10 @@ import java.util.regex.PatternSyntaxException;
  * @since   JDK1.0
  */
 
-public final class String
+public final class String   // final，禁止继承，避免继承后破坏封装性
     implements java.io.Serializable, Comparable<String>, CharSequence {
     /** The value is used for character storage. */
-    private final char value[];
+    private final char value[]; // 字符串数组，final修饰，value引用不可变，但是value数组元素可变。所以String不可变的关键是String类中的方法没有改变数组中的元素，没有暴露内部成员字段
 
     /** Cache the hash code for the string */
     private int hash; // Default to 0
@@ -135,7 +135,7 @@ public final class String
      * unnecessary since Strings are immutable.
      */
     public String() {
-        this.value = "".value;
+        this.value = "".value;  // 默认为”“
     }
 
     /**
@@ -149,7 +149,7 @@ public final class String
      *         A {@code String}
      */
     public String(String original) {
-        this.value = original.value;
+        this.value = original.value;    // 新的value引用和original的value引用指向同一段内存，表明新的String和original共享一段内存，但String的不可变性使得这种方式可行，且节省了内存
         this.hash = original.hash;
     }
 
@@ -163,7 +163,7 @@ public final class String
      *         The initial value of the string
      */
     public String(char value[]) {
-        this.value = Arrays.copyOf(value, value.length);
+        this.value = Arrays.copyOf(value, value.length);    // copyOf返回新的数组，也就是说新的value和传入的value并不是指向同一段内存，就算传入的value数组元素改变，新的String也不会变
     }
 
     /**
@@ -195,16 +195,16 @@ public final class String
             if (count < 0) {
                 throw new StringIndexOutOfBoundsException(count);
             }
-            if (offset <= value.length) {
+            if (offset <= value.length) {   // count == 0 && offset有效
                 this.value = "".value;
                 return;
             }
         }
         // Note: offset or count might be near -1>>>1.
-        if (offset > value.length - count) {
+        if (offset > value.length - count) {    // 截取的部分超出了value数组
             throw new StringIndexOutOfBoundsException(offset + count);
         }
-        this.value = Arrays.copyOfRange(value, offset, offset+count);
+        this.value = Arrays.copyOfRange(value, offset, offset+count);   // copyOfRange返回一个新数组
     }
 
     /**
