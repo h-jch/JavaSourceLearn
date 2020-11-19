@@ -12,5 +12,10 @@ public class Test {
         System.out.println(str);
         value[0] = 'd';
         System.out.println(str);
+
+        String abc = "abc";
+        String def = new String("def");
+        String abcdef = abc + def;
+        System.out.println(abcdef);
     }
 }

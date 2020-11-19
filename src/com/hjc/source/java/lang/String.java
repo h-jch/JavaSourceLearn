@@ -235,7 +235,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      *
      * @since  1.5
      */
-    public String(int[] codePoints, int offset, int count) {
+    public String(int[] codePoints, int offset, int count) {    // 传入的int数组，转化为unicode编码对应的字符
         if (offset < 0) {
             throw new StringIndexOutOfBoundsException(offset);
         }
@@ -259,22 +259,22 @@ public final class String   // final，禁止继承，避免继承后破坏封�
         int n = count;
         for (int i = offset; i < end; i++) {
             int c = codePoints[i];
-            if (Character.isBmpCodePoint(c))
+            if (Character.isBmpCodePoint(c))    // 编码占16位
                 continue;
-            else if (Character.isValidCodePoint(c))
+            else if (Character.isValidCodePoint(c)) // 编码占32位
                 n++;
             else throw new IllegalArgumentException(Integer.toString(c));
         }
 
         // Pass 2: Allocate and fill in char[]
-        final char[] v = new char[n];
+        final char[] v = new char[n];   // char本身占16位，但是传入的int占32位，其中有些只有16位有效，而有些需要32位
 
         for (int i = offset, j = 0; i < end; i++, j++) {
             int c = codePoints[i];
             if (Character.isBmpCodePoint(c))
-                v[j] = (char)c;
+                v[j] = (char)c;         // 编码16位有效，存1个char
             else
-                Character.toSurrogates(c, v, j++);
+                Character.toSurrogates(c, v, j++);  // 编码32位，存2个char
         }
 
         this.value = v;
@@ -320,7 +320,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      * @see  #String(byte[])
      */
     @Deprecated
-    public String(byte ascii[], int hibyte, int offset, int count) {
+    public String(byte ascii[], int hibyte, int offset, int count) {    // 传入ascii码数组
         checkBounds(ascii, offset, count);
         char value[] = new char[count];
 
@@ -577,7 +577,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      */
     public String(StringBuffer buffer) {
         synchronized(buffer) {
-            this.value = Arrays.copyOf(buffer.getValue(), buffer.length());
+            this.value = Arrays.copyOf(buffer.getValue(), buffer.length()); // 返回新的数组，buffer的改变不影响新数组
         }
     }
 
@@ -608,7 +608,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
     */
     String(char[] value, boolean share) {
         // assert share : "unshared not supported";
-        this.value = value;
+        this.value = value;     // 共享value数组的内存
     }
 
     /**
@@ -813,7 +813,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      *            <li>{@code dstBegin+(srcEnd-srcBegin)} is larger than
      *                {@code dst.length}</ul>
      */
-    public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin) {
+    public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin) {  // 将字符串[srcBegin, srcEnd)范围的字符复制到dst数组中，起始位置为dstBegin
         if (srcBegin < 0) {
             throw new StringIndexOutOfBoundsException(srcBegin);
         }
@@ -1161,7 +1161,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
         while (k < lim) {
             char c1 = v1[k];
             char c2 = v2[k];
-            if (c1 != c2) {
+            if (c1 != c2) {     // 二者不相等，返回正或负，二者相等，比较下一个
                 return c1 - c2;
             }
             k++;
@@ -1181,7 +1181,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      * @see     java.text.Collator#compare(String, String)
      * @since   1.2
      */
-    public static final Comparator<String> CASE_INSENSITIVE_ORDER
+    public static final Comparator<String> CASE_INSENSITIVE_ORDER       // 比较器，大小写不敏感(忽略字符的大小写)
                                          = new CaseInsensitiveComparator();
     private static class CaseInsensitiveComparator
             implements Comparator<String>, java.io.Serializable {
@@ -1196,10 +1196,10 @@ public final class String   // final，禁止继承，避免继承后破坏封�
                 char c1 = s1.charAt(i);
                 char c2 = s2.charAt(i);
                 if (c1 != c2) {
-                    c1 = Character.toUpperCase(c1);
+                    c1 = Character.toUpperCase(c1); // 都转化为大写比较
                     c2 = Character.toUpperCase(c2);
                     if (c1 != c2) {
-                        c1 = Character.toLowerCase(c1);
+                        c1 = Character.toLowerCase(c1); // 都转化为小写比较
                         c2 = Character.toLowerCase(c2);
                         if (c1 != c2) {
                             // No overflow because of numeric promotion
@@ -1235,8 +1235,8 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      * @see     java.text.Collator#compare(String, String)
      * @since   1.2
      */
-    public int compareToIgnoreCase(String str) {
-        return CASE_INSENSITIVE_ORDER.compare(this, str);
+    public int compareToIgnoreCase(String str) {    // 忽略大小写比较
+        return CASE_INSENSITIVE_ORDER.compare(this, str);   // 调用比较器的方法
     }
 
     /**
@@ -1271,7 +1271,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      *          exactly matches the specified subregion of the string argument;
      *          {@code false} otherwise.
      */
-    public boolean regionMatches(int toffset, String other, int ooffset,
+    public boolean regionMatches(int toffset, String other, int ooffset,    // 比较toffset开始的字符串和从ooffset开始长度为len的other字符串是否匹配
             int len) {
         char ta[] = value;
         int to = toffset;
@@ -1341,7 +1341,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      *          or case insensitive depends on the {@code ignoreCase}
      *          argument.
      */
-    public boolean regionMatches(boolean ignoreCase, int toffset,
+    public boolean regionMatches(boolean ignoreCase, int toffset,   // ignoreCase是否忽略大小写
             String other, int ooffset, int len) {
         char ta[] = value;
         int to = toffset;
@@ -1364,7 +1364,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
                 // try converting both characters to uppercase.
                 // If the results match, then the comparison scan should
                 // continue.
-                char u1 = Character.toUpperCase(c1);
+                char u1 = Character.toUpperCase(c1);    // 都转化为大写比较
                 char u2 = Character.toUpperCase(c2);
                 if (u1 == u2) {
                     continue;
@@ -1373,7 +1373,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
                 // for the Georgian alphabet, which has strange rules about case
                 // conversion.  So we need to make one last check before
                 // exiting.
-                if (Character.toLowerCase(u1) == Character.toLowerCase(u2)) {
+                if (Character.toLowerCase(u1) == Character.toLowerCase(u2)) {   // 再都转化为小写比较
                     continue;
                 }
             }
@@ -1399,7 +1399,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      *          this.substring(toffset).startsWith(prefix)
      *          </pre>
      */
-    public boolean startsWith(String prefix, int toffset) {
+    public boolean startsWith(String prefix, int toffset) { // 字符串从toffset开始是否和prefix匹配
         char ta[] = value;
         int to = toffset;
         char pa[] = prefix.value;
@@ -1446,7 +1446,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      *          as determined by the {@link #equals(Object)} method.
      */
     public boolean endsWith(String suffix) {
-        return startsWith(suffix, value.length - suffix.value.length);
+        return startsWith(suffix, value.length - suffix.value.length);  // 从value.length - suffix.value.length位置开始比较，就是比较String是否以suffix结尾
     }
 
     /**
@@ -1462,7 +1462,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      *
      * @return  a hash code value for this object.
      */
-    public int hashCode() {
+    public int hashCode() {     // 获得并存储字符串hash值
         int h = hash;
         if (h == 0 && value.length > 0) {
             char val[] = value;
@@ -1542,7 +1542,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      *          than or equal to {@code fromIndex}, or {@code -1}
      *          if the character does not occur.
      */
-    public int indexOf(int ch, int fromIndex) {
+    public int indexOf(int ch, int fromIndex) { // 从字符串的fromIndex处开始，字符ch(Unicode编码)第一次出现的位置
         final int max = value.length;
         if (fromIndex < 0) {
             fromIndex = 0;
@@ -1551,7 +1551,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
             return -1;
         }
 
-        if (ch < Character.MIN_SUPPLEMENTARY_CODE_POINT) {
+        if (ch < Character.MIN_SUPPLEMENTARY_CODE_POINT) {  // ch < 65536，ch可以用16位char表示
             // handle most cases here (ch is a BMP code point or a
             // negative value (invalid code point))
             final char[] value = this.value;
@@ -1570,7 +1570,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      * Handles (rare) calls of indexOf with a supplementary character.
      */
     private int indexOfSupplementary(int ch, int fromIndex) {
-        if (Character.isValidCodePoint(ch)) {
+        if (Character.isValidCodePoint(ch)) {   // ch需要32位表示
             final char[] value = this.value;
             final char hi = Character.highSurrogate(ch);
             final char lo = Character.lowSurrogate(ch);
@@ -1645,7 +1645,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      *          than or equal to {@code fromIndex}, or {@code -1}
      *          if the character does not occur before that point.
      */
-    public int lastIndexOf(int ch, int fromIndex) {
+    public int lastIndexOf(int ch, int fromIndex) { // 从字符串的fromIndex处逆向遍历，返回字符ch第一次出现的位置
         if (ch < Character.MIN_SUPPLEMENTARY_CODE_POINT) {
             // handle most cases here (ch is a BMP code point or a
             // negative value (invalid code point))
@@ -1750,8 +1750,8 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      * @param   targetCount  count of the target string.
      * @param   fromIndex    the index to begin searching from.
      */
-    static int indexOf(char[] source, int sourceOffset, int sourceCount,
-            char[] target, int targetOffset, int targetCount,
+    static int indexOf(char[] source, int sourceOffset, int sourceCount,    // source数组的[sourceOffset, sourceOffset + sourceCount)片段中从fromIndex开始
+            char[] target, int targetOffset, int targetCount,           // 搜索target数组的[targetOffset, targetOffset + targetCount)片段第一次出现的位置
             int fromIndex) {
         if (fromIndex >= sourceCount) {
             return (targetCount == 0 ? sourceCount : -1);
@@ -1769,17 +1769,17 @@ public final class String   // final，禁止继承，避免继承后破坏封�
         for (int i = sourceOffset + fromIndex; i <= max; i++) {
             /* Look for first character. */
             if (source[i] != first) {
-                while (++i <= max && source[i] != first);
+                while (++i <= max && source[i] != first);   // 找到第一个匹配的字符位置
             }
 
             /* Found first character, now look at the rest of v2 */
             if (i <= max) {
                 int j = i + 1;
                 int end = j + targetCount - 1;
-                for (int k = targetOffset + 1; j < end && source[j]
+                for (int k = targetOffset + 1; j < end && source[j]     // 一直往后比较，直到匹配到target数组的末尾或者字符不相等
                         == target[k]; j++, k++);
 
-                if (j == end) {
+                if (j == end) {     // 如果匹配到了target数组的末尾，说明匹配成功
                     /* Found whole string. */
                     return i - sourceOffset;
                 }
@@ -1930,7 +1930,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
         if (subLen < 0) {
             throw new StringIndexOutOfBoundsException(subLen);
         }
-        return (beginIndex == 0) ? this : new String(value, beginIndex, subLen);
+        return (beginIndex == 0) ? this : new String(value, beginIndex, subLen);    // beginIndex == 0 不分配内存，beginIndex > 0 分配内存
     }
 
     /**
@@ -2029,9 +2029,9 @@ public final class String   // final，禁止继承，避免继承后破坏封�
             return this;
         }
         int len = value.length;
-        char buf[] = Arrays.copyOf(value, len + otherLen);
-        str.getChars(buf, len);
-        return new String(buf, true);
+        char buf[] = Arrays.copyOf(value, len + otherLen);  // 分配新的内存，长度为len + otherLen，并将value复制进去
+        str.getChars(buf, len);     // 将str的字符数组复制到buf数组的len起始位置上
+        return new String(buf, true);   // 新的String字符数组和buf数组共享内存
     }
 
     /**
@@ -2063,28 +2063,28 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      * @return  a string derived from this string by replacing every
      *          occurrence of {@code oldChar} with {@code newChar}.
      */
-    public String replace(char oldChar, char newChar) {
+    public String replace(char oldChar, char newChar) { // 将字符串中的oldChar改为newChar，不改变原字符串，返回一个新字符串
         if (oldChar != newChar) {
             int len = value.length;
             int i = -1;
             char[] val = value; /* avoid getfield opcode */
 
             while (++i < len) {
-                if (val[i] == oldChar) {
+                if (val[i] == oldChar) {    // 定位到数组中需要修改的位置
                     break;
                 }
             }
             if (i < len) {
-                char buf[] = new char[len];
+                char buf[] = new char[len]; // 创建新的数组，不能改变原有的数组
                 for (int j = 0; j < i; j++) {
                     buf[j] = val[j];
                 }
                 while (i < len) {
                     char c = val[i];
-                    buf[i] = (c == oldChar) ? newChar : c;
+                    buf[i] = (c == oldChar) ? newChar : c;  // 符合oldChar就设置成newChar，否则不变
                     i++;
                 }
-                return new String(buf, true);
+                return new String(buf, true);   // 返回新的数组构成的字符串
             }
         }
         return this;
