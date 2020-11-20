@@ -2117,7 +2117,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      * @since 1.4
      * @spec JSR-51
      */
-    public boolean matches(String regex) {
+    public boolean matches(String regex) {  // 正则表达式匹配
         return Pattern.matches(regex, this);
     }
 
@@ -2869,13 +2869,13 @@ public final class String   // final，禁止继承，避免继承后破坏封�
         int st = 0;
         char[] val = value;    /* avoid getfield opcode */
 
-        while ((st < len) && (val[st] <= ' ')) {
+        while ((st < len) && (val[st] <= ' ')) {    // 去除字符串开头的空格
             st++;
         }
-        while ((st < len) && (val[len - 1] <= ' ')) {
+        while ((st < len) && (val[len - 1] <= ' ')) {   // 去除字符串末尾的空格
             len--;
         }
-        return ((st > 0) || (len < value.length)) ? substring(st, len) : this;
+        return ((st > 0) || (len < value.length)) ? substring(st, len) : this;  // 返回一个新的字符串，或者本身
     }
 
     /**
@@ -2895,9 +2895,9 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      *          the character sequence represented by this string.
      */
     public char[] toCharArray() {
-        // Cannot use Arrays.copyOf because of class initialization order issues
-        char result[] = new char[value.length];
-        System.arraycopy(value, 0, result, 0, value.length);
+        // Cannot use Arrays.copyOf because of class initialization order issues    // jvm初始化的时候需要处理字符串，此时会调用toCharArray方法，
+        char result[] = new char[value.length];     // 返回新的字符数组                // 如果此方法用Arrays.copyOf实现，此时Arrays类还没被加载，会引发空指针异常
+        System.arraycopy(value, 0, result, 0, value.length);         // 而System.arraycopy是本地方法，不存在类加载问题
         return result;
     }
 
@@ -2990,7 +2990,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      *          {@code obj.toString()} is returned.
      * @see     java.lang.Object#toString()
      */
-    public static String valueOf(Object obj) {
+    public static String valueOf(Object obj) {  // obj -> String
         return (obj == null) ? "null" : obj.toString();
     }
 
@@ -3004,7 +3004,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      * @return  a {@code String} that contains the characters of the
      *          character array.
      */
-    public static String valueOf(char data[]) {
+    public static String valueOf(char data[]) { // char[] -> String
         return new String(data);
     }
 
@@ -3045,7 +3045,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      *          {@code offset+count} is larger than
      *          {@code data.length}.
      */
-    public static String copyValueOf(char data[], int offset, int count) {
+    public static String copyValueOf(char data[], int offset, int count) {  // 与valueOf等价
         return new String(data, offset, count);
     }
 
@@ -3056,7 +3056,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      * @return  a {@code String} that contains the characters of the
      *          character array.
      */
-    public static String copyValueOf(char data[]) {
+    public static String copyValueOf(char data[]) { // 与valueOf等价
         return new String(data);
     }
 
@@ -3068,7 +3068,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      *          {@code "true"} is returned; otherwise, a string equal to
      *          {@code "false"} is returned.
      */
-    public static String valueOf(boolean b) {
+    public static String valueOf(boolean b) {   // boolean -> String
         return b ? "true" : "false";
     }
 
@@ -3095,7 +3095,7 @@ public final class String   // final，禁止继承，避免继承后破坏封�
      * @return  a string representation of the {@code int} argument.
      * @see     java.lang.Integer#toString(int, int)
      */
-    public static String valueOf(int i) {
+    public static String valueOf(int i) {   // int -> String底层调用的是Integer.toString
         return Integer.toString(i);
     }
 
